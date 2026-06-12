@@ -89,7 +89,7 @@ function Header() {
         ) : (
           <div className="flex items-center gap-6">
             <a
-              href="http://localhost:3000/login"
+              href={`${import.meta.env.VITE_API_URL}/login`}
               className="py-2 px-6 rounded-md border flex items-center gap-4 bg-[#7263F3] text-white border-[#7263F3] hover:bg-[#7263F3]/90 transition-all duration-200 ease-in-out"
             >
               <LogIn className="w-4 h-4" />
@@ -98,7 +98,7 @@ function Header() {
             </a>
 
             <a
-              href="http://localhost:3000/login"
+              href={`${import.meta.env.VITE_API_URL}/login`}
               className="py-2 px-6 rounded-md border flex items-center gap-4 border-[#7263F3] text-[#7263F3] hover:bg-[#7263F3]/10 transition-all duration-200 ease-in-out"
             >
               <UserPlus className="w-4 h-4" />

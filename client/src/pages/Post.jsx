@@ -13,7 +13,7 @@ function Post() {
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      (window.location.href = "http://localhost:3000/login");
+      (window.location.href = `${import.meta.env.VITE_API_URL}/login`);
     }
   }, [loading, isAuthenticated, navigate]);
 

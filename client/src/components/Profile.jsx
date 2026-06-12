@@ -81,7 +81,7 @@ function Profile() {
           className="cursor-pointer"
           onClick={() => {
             window.location.href =
-              "http://localhost:3000/logout";
+              href=`${import.meta.env.VITE_API_URL}/logout`
           }}
         >
           <LogOut className="mr-2 h-4 w-4" />

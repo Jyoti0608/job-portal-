@@ -23,7 +23,7 @@ function MyJobs() {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      (window.location.href = "http://localhost:3000/login");
+      (window.location.href = `${import.meta.env.VITE_API_URL}/login`);
     }
   }, [loading, isAuthenticated, navigate]);
 

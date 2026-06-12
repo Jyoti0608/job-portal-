@@ -144,7 +144,7 @@ function JobDetails() {
                 onClick={() => {
                   isAuthenticated
                     ? handleLike(job._id)
-                    : (window.location.href = "http://localhost:3000/login");
+                    : (window.location.href = `${import.meta.env.VITE_API_URL}/login`);
                 }}
               >
                 {isLiked
@@ -262,7 +262,7 @@ function JobDetails() {
                   );
                 }
               } else {
-                (window.location.href = "http://localhost:3000/login");
+                (window.location.href = `${import.meta.env.VITE_API_URL}/login`);
               }
             }}
           >

@@ -14,7 +14,7 @@ import { useGlobalContext } from "./GlobalContext";
 
 const JobsContext = createContext();
 
-axios.defaults.baseURL = "http://localhost:3000";
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
 export const JobsContextProvider = ({ children }) => {
