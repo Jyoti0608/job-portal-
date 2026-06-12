@@ -17,6 +17,8 @@ import {
   bookmarkEmpty,
 } from "../../utils/Icons";
 
+import { useAuth0 } from "@auth0/auth0-react";
+
 function MyJob({ job }) {
   const { deleteJob, likeJob } =
     useJobsContext();
@@ -27,7 +29,11 @@ function MyJob({ job }) {
     getUserProfile,
   } = useGlobalContext();
 
-  const [isLiked, setIsLiked] = useState(false);
+  const { loginWithRedirect } =
+    useAuth0();
+
+  const [isLiked, setIsLiked] =
+    useState(false);
 
   const navigate = useNavigate();
 
@@ -95,10 +101,12 @@ function MyJob({ job }) {
           onClick={() => {
             isAuthenticated
               ? handleLike(job._id)
-              : (window.location.href = `${import.meta.env.VITE_API_URL}/login`);
+              : loginWithRedirect();
           }}
         >
-          {isLiked ? bookmark : bookmarkEmpty}
+          {isLiked
+            ? bookmark
+            : bookmarkEmpty}
         </button>
       </div>
 
@@ -127,14 +135,16 @@ function MyJob({ job }) {
             </div>
 
             <div className="flex flex-wrap gap-2 mb-4">
-              {job.tags.map((tag, index) => (
-                <Badge
-                  key={index}
-                  variant="outline"
-                >
-                  {tag}
-                </Badge>
-              ))}
+              {job.tags.map(
+                (tag, index) => (
+                  <Badge
+                    key={index}
+                    variant="outline"
+                  >
+                    {tag}
+                  </Badge>
+                )
+              )}
             </div>
           </div>
 

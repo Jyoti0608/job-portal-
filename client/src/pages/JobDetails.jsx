@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 
 import toast from "react-hot-toast";
 
@@ -18,6 +21,8 @@ import {
   bookmarkEmpty,
 } from "../utils/Icons";
 
+import { useAuth0 } from "@auth0/auth0-react";
+
 function JobDetails() {
   const {
     jobs,
@@ -29,6 +34,9 @@ function JobDetails() {
     userProfile,
     isAuthenticated,
   } = useGlobalContext();
+
+  const { loginWithRedirect } =
+    useAuth0();
 
   const { id } = useParams();
 
@@ -144,7 +152,7 @@ function JobDetails() {
                 onClick={() => {
                   isAuthenticated
                     ? handleLike(job._id)
-                    : (window.location.href = `${import.meta.env.VITE_API_URL}/login`);
+                    : loginWithRedirect();
                 }}
               >
                 {isLiked
@@ -262,7 +270,7 @@ function JobDetails() {
                   );
                 }
               } else {
-                (window.location.href = `${import.meta.env.VITE_API_URL}/login`);
+                loginWithRedirect();
               }
             }}
           >

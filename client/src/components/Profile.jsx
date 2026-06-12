@@ -9,10 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-import {
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { Settings, LogOut } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -20,22 +17,21 @@ import { useGlobalContext } from "../context/GlobalContext";
 
 import { Badge } from "./ui/badge";
 
+import { useAuth0 } from "@auth0/auth0-react";
+
 function Profile() {
   const { userProfile } = useGlobalContext();
 
-  const {
-    profilePicture,
-    name,
-    profession,
-    email,
-  } = userProfile;
-
   const navigate = useNavigate();
+
+  const { logout } = useAuth0();
 
   return (
     <DropdownMenu>
       <div className="flex items-center gap-4">
-        <Badge>{profession}</Badge>
+        <Badge>
+          {userProfile?.profession || "User"}
+        </Badge>
 
         <DropdownMenuTrigger
           asChild
@@ -43,8 +39,8 @@ function Profile() {
         >
           <img
             src={
-              profilePicture
-                ? profilePicture
+              userProfile?.profilePicture
+                ? userProfile.profilePicture
                 : "/user.png"
             }
             alt="avatar"
@@ -60,32 +56,36 @@ function Profile() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {name}
+              {userProfile?.name || "User"}
             </p>
 
             <p className="text-xs leading-none text-muted-foreground">
-              {email}
+              {userProfile?.email || "No Email"}
             </p>
           </div>
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => navigate("/settings")}
+        >
           <Settings className="mr-2 h-4 w-4" />
-
           <span>Settings</span>
         </DropdownMenuItem>
 
         <DropdownMenuItem
           className="cursor-pointer"
-          onClick={() => {
-            window.location.href =
-              href=`${import.meta.env.VITE_API_URL}/logout`
-          }}
+          onClick={() =>
+            logout({
+              logoutParams: {
+                returnTo: window.location.origin,
+              },
+            })
+          }
         >
           <LogOut className="mr-2 h-4 w-4" />
-
           <span>Logout</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

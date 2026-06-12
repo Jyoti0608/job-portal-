@@ -6,16 +6,28 @@ import JobForm from "../components/JobPost/JobForm";
 
 import { useGlobalContext } from "../context/GlobalContext";
 
+import { useAuth0 } from "@auth0/auth0-react";
+
 function Post() {
-  const { isAuthenticated, loading } = useGlobalContext();
+  const {
+    isAuthenticated,
+    loading,
+  } = useGlobalContext();
+
+  const { loginWithRedirect } =
+    useAuth0();
 
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      (window.location.href = `${import.meta.env.VITE_API_URL}/login`);
+      loginWithRedirect();
     }
-  }, [loading, isAuthenticated, navigate]);
+  }, [
+    loading,
+    isAuthenticated,
+    loginWithRedirect,
+  ]);
 
   return (
     <div className="flex flex-col">

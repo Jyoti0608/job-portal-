@@ -10,6 +10,7 @@ import { Separator } from "../ui/separator";
 
 import formatMoney from "../../utils/formatMoney";
 import { formatDates } from "../../utils/formatDates";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import {
   bookmark,
@@ -23,6 +24,7 @@ function JobCard({ job, activeJob }) {
     useGlobalContext();
 
   const [isLiked, setIsLiked] = useState(false);
+  const { loginWithRedirect } = useAuth0();
 
   const {
     title,
@@ -120,10 +122,10 @@ function JobCard({ job, activeJob }) {
               : "text-gray-400"
           }`}
           onClick={() => {
-            isAuthenticated
-              ? handleLike(job._id)
-              : (window.location.href = `${import.meta.env.VITE_API_URL}/login`);
-          }}
+  isAuthenticated
+    ? handleLike(job._id)
+    : loginWithRedirect();
+}}
         >
           {isLiked ? bookmark : bookmarkEmpty}
         </button>
