@@ -1,3 +1,4 @@
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 
@@ -12,8 +13,10 @@ import { JobsContextProvider } from "./context/JobsContext";
 
 import { Auth0Provider } from "@auth0/auth0-react";
 
-// Font Awesome
 import "@fortawesome/fontawesome-free/css/all.min.css";
+
+// Use explicit env var in production, fall back to origin for localhost dev
+const callbackUrl = import.meta.env.VITE_AUTH0_CALLBACK_URL || window.location.origin;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -21,7 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       domain={import.meta.env.VITE_AUTH0_DOMAIN}
       clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
       authorizationParams={{
-        redirect_uri: window.location.origin,
+        redirect_uri: callbackUrl,
       }}
     >
       <BrowserRouter>
