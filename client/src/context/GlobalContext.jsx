@@ -6,16 +6,21 @@ import React, {
 } from "react";
 
 import axios from "axios";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const GlobalContext = createContext();
 
-axios.defaults.baseURL =
-  import.meta.env.VITE_API_URL;
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
 export const GlobalContextProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [auth0User, setAuth0User] = useState(null);
+  // Use Auth0 SDK directly — no more backend check-auth call
+  const {
+    user,
+    isAuthenticated,
+    isLoading: auth0Loading,
+  } = useAuth0();
+
   const [userProfile, setUserProfile] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -35,36 +40,22 @@ export const GlobalContextProvider = ({ children }) => {
     address: "",
   });
 
-  // Check authentication
-  useEffect(() => {
-    const checkAuth = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get("/api/v1/check-auth");
-
-        setIsAuthenticated(res.data.isAuthenticated);
-        setAuth0User(res.data.user);
-      } catch (error) {
-        console.log("Error checking auth", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  // Get user profile
+  // Get user profile from your backend
   const getUserProfile = async (id) => {
     try {
       const res = await axios.get(`/api/v1/user/${id}`);
-
       setUserProfile(res.data);
     } catch (error) {
       console.log("Error getting user profile", error);
     }
   };
+
+  // Fetch profile once Auth0 confirms user is logged in
+  useEffect(() => {
+    if (!auth0Loading && isAuthenticated && user) {
+      getUserProfile(user.sub);
+    }
+  }, [isAuthenticated, user, auth0Loading]);
 
   // Handle input changes
   const handleTitleChange = (e) => {
@@ -89,7 +80,6 @@ export const GlobalContextProvider = ({ children }) => {
     setNegotiable(false);
     setTags([]);
     setSkills([]);
-
     setLocation({
       country: "",
       city: "",
@@ -97,21 +87,14 @@ export const GlobalContextProvider = ({ children }) => {
     });
   };
 
-  // Fetch profile after authentication
-  useEffect(() => {
-    if (isAuthenticated && auth0User) {
-      getUserProfile(auth0User.sub);
-    }
-  }, [isAuthenticated, auth0User]);
-
   return (
     <GlobalContext.Provider
       value={{
         isAuthenticated,
-        auth0User,
+        auth0User: user,       // renamed for backward compat with rest of your app
         userProfile,
         getUserProfile,
-        loading,
+        loading: auth0Loading || loading,
 
         jobTitle,
         jobDescription,
