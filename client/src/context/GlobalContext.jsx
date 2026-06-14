@@ -39,42 +39,38 @@ export const GlobalContextProvider = ({ children }) => {
     address: "",
   });
 
-  // Set Bearer token on all axios requests when logged in
+  // Set token AND create user in DB - runs together to avoid race condition
   useEffect(() => {
-    const setAxiosToken = async () => {
-      if (isAuthenticated) {
-        try {
-          const token = await getAccessTokenSilently();
-          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        } catch (error) {
-          console.log("Error getting access token", error);
-        }
-      } else {
-        delete axios.defaults.headers.common["Authorization"];
-      }
-    };
-    setAxiosToken();
-  }, [isAuthenticated, getAccessTokenSilently]);
-
-  // Create or fetch user in MongoDB after Auth0 login
-  useEffect(() => {
-    const createUserInDB = async () => {
+    const initUser = async () => {
       if (!auth0Loading && isAuthenticated && user) {
         try {
+          // Step 1: Get fresh token for THIS user
+          const token = await getAccessTokenSilently();
+          
+          // Step 2: Set token on axios BEFORE any API calls
+          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+          // Step 3: Now create/fetch user in MongoDB using the correct token
           const res = await axios.post("/api/v1/user/create", {
             auth0Id: user.sub,
             name: user.name,
             email: user.email,
             profilePicture: user.picture,
           });
+
           setUserProfile(res.data);
         } catch (error) {
-          console.log("Error creating user in DB", error);
+          console.log("Error initializing user", error);
         }
+      } else if (!auth0Loading && !isAuthenticated) {
+        // Clear everything on logout
+        delete axios.defaults.headers.common["Authorization"];
+        setUserProfile({});
       }
     };
-    createUserInDB();
-  }, [isAuthenticated, user, auth0Loading]);
+
+    initUser();
+  }, [isAuthenticated, user, auth0Loading, getAccessTokenSilently]);
 
   const getUserProfile = async (id) => {
     try {
