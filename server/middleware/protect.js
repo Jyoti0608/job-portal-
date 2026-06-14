@@ -1,8 +1,8 @@
 import { auth } from "express-oauth2-jwt-bearer";
 
 const protect = auth({
-  audience: process.env.AUTH0_AUDIENCE,
-  issuerBaseURL: process.env.ISSUER_BASE_URL,
+  audience: "https://job-portal-h2e0.onrender.com",
+  issuerBaseURL: "https://dev-gfgs5zwhuz3mwhd5.us.auth0.com",
 });
 
 export default protect;
