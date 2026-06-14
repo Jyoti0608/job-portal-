@@ -7,6 +7,7 @@ import JobTitle from "./JobTitle";
 import JobDetails from "./JobDetails";
 import JobSkills from "./JobSkills";
 import JobLocation from "./JobLocation";
+import JobSummary from "./JobSummary";
 
 function JobForm() {
   const {
@@ -53,6 +54,9 @@ function JobForm() {
 
       case "Location":
         return <JobLocation />;
+
+      case "Summary":
+        return <JobSummary />;
 
       default:
         return null;
