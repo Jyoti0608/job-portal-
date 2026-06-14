@@ -9,7 +9,11 @@ import JobDetails from "./pages/JobDetails";
 function App() {
   const { isLoading } = useAuth0();
 
-  if (isLoading) return <div style={{display:'flex', justifyContent:'center', marginTop:'2rem'}}>Loading...</div>;
+  if (isLoading) return (
+    <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem" }}>
+      Loading...
+    </div>
+  );
 
   return (
     <Routes>
