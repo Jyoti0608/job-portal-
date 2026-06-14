@@ -56,6 +56,26 @@ export const GlobalContextProvider = ({ children }) => {
     setAxiosToken();
   }, [isAuthenticated, getAccessTokenSilently]);
 
+  // Create or fetch user in MongoDB after Auth0 login
+  useEffect(() => {
+    const createUserInDB = async () => {
+      if (!auth0Loading && isAuthenticated && user) {
+        try {
+          const res = await axios.post("/api/v1/user/create", {
+            auth0Id: user.sub,
+            name: user.name,
+            email: user.email,
+            profilePicture: user.picture,
+          });
+          setUserProfile(res.data);
+        } catch (error) {
+          console.log("Error creating user in DB", error);
+        }
+      }
+    };
+    createUserInDB();
+  }, [isAuthenticated, user, auth0Loading]);
+
   const getUserProfile = async (id) => {
     try {
       const res = await axios.get(`/api/v1/user/${id}`);
@@ -64,12 +84,6 @@ export const GlobalContextProvider = ({ children }) => {
       console.log("Error getting user profile", error);
     }
   };
-
-  useEffect(() => {
-    if (!auth0Loading && isAuthenticated && user) {
-      getUserProfile(user.sub);
-    }
-  }, [isAuthenticated, user, auth0Loading]);
 
   const handleTitleChange = (e) => setJobTitle(e.target.value.trimStart());
   const handleDescriptionChange = (e) => setJobDescription(e.target.value.trimStart());
