@@ -20,20 +20,13 @@ import {
 import { useAuth0 } from "@auth0/auth0-react";
 
 function MyJob({ job }) {
-  const { deleteJob, likeJob } =
-    useJobsContext();
+  const { deleteJob, likeJob } = useJobsContext();
 
-  const {
-    userProfile,
-    isAuthenticated,
-    getUserProfile,
-  } = useGlobalContext();
+  const { userProfile, isAuthenticated } = useGlobalContext();
 
-  const { loginWithRedirect } =
-    useAuth0();
+  const { loginWithRedirect } = useAuth0();
 
-  const [isLiked, setIsLiked] =
-    useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   const navigate = useNavigate();
 
@@ -42,24 +35,10 @@ function MyJob({ job }) {
     likeJob(id);
   };
 
-  useEffect(() => {
-    if (
-      isAuthenticated &&
-      job.createdBy._id
-    ) {
-      getUserProfile(job.createdBy._id);
-    }
-  }, [
-    isAuthenticated,
-    job.createdBy._id,
-    getUserProfile,
-  ]);
-
+  // Only check like status - don't overwrite userProfile
   useEffect(() => {
     if (userProfile?._id) {
-      setIsLiked(
-        job.likes.includes(userProfile._id)
-      );
+      setIsLiked(job.likes.includes(userProfile._id));
     }
   }, [job.likes, userProfile]);
 
@@ -68,16 +47,11 @@ function MyJob({ job }) {
       <div className="flex justify-between">
         <div
           className="flex items-center space-x-4 mb-2 cursor-pointer"
-          onClick={() =>
-            navigate(`/job/${job._id}`)
-          }
+          onClick={() => navigate(`/job/${job._id}`)}
         >
           <img
             alt="logo"
-            src={
-              job.createdBy.profilePicture ||
-              "/user.png"
-            }
+            src={job.createdBy.profilePicture || "/user.png"}
             className="w-12 h-12 rounded-full shadow-sm object-cover"
           />
 
@@ -93,20 +67,12 @@ function MyJob({ job }) {
         </div>
 
         <button
-          className={`text-2xl ${
-            isLiked
-              ? "text-[#7263f3]"
-              : "text-gray-400"
-          }`}
+          className={`text-2xl ${isLiked ? "text-[#7263f3]" : "text-gray-400"}`}
           onClick={() => {
-            isAuthenticated
-              ? handleLike(job._id)
-              : loginWithRedirect();
+            isAuthenticated ? handleLike(job._id) : loginWithRedirect();
           }}
         >
-          {isLiked
-            ? bookmark
-            : bookmarkEmpty}
+          {isLiked ? bookmark : bookmarkEmpty}
         </button>
       </div>
 
@@ -122,60 +88,37 @@ function MyJob({ job }) {
         <div className="flex justify-between">
           <div>
             <div className="flex flex-wrap gap-2 mb-4">
-              {job.skills.map(
-                (skill, index) => (
-                  <Badge
-                    key={index}
-                    variant="secondary"
-                  >
-                    {skill}
-                  </Badge>
-                )
-              )}
+              {job.skills.map((skill, index) => (
+                <Badge key={index} variant="secondary">
+                  {skill}
+                </Badge>
+              ))}
             </div>
 
             <div className="flex flex-wrap gap-2 mb-4">
-              {job.tags.map(
-                (tag, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                  >
-                    {tag}
-                  </Badge>
-                )
-              )}
+              {job.tags.map((tag, index) => (
+                <Badge key={index} variant="outline">
+                  {tag}
+                </Badge>
+              ))}
             </div>
           </div>
 
-          {job.createdBy._id ===
-            userProfile?._id && (
+          {job.createdBy._id === userProfile?._id && (
             <div className="self-end">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-gray-500"
-              >
+              <Button variant="ghost" size="icon" className="text-gray-500">
                 <Pencil size={14} />
-
-                <span className="sr-only">
-                  Edit job
-                </span>
+                <span className="sr-only">Edit job</span>
               </Button>
 
               <Button
                 variant="ghost"
                 size="icon"
                 className="text-gray-500 hover:text-red-500"
-                onClick={() =>
-                  deleteJob(job._id)
-                }
+                onClick={() => deleteJob(job._id)}
               >
                 <Trash size={14} />
-
-                <span className="sr-only">
-                  Delete job
-                </span>
+                <span className="sr-only">Delete job</span>
               </Button>
             </div>
           )}
